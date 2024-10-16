@@ -1,0 +1,10 @@
+buildpack:
+  name: Blazar-Buildpack-Java
+
+env:
+  SKIP_VERSION_OVERRIDE_ON_BRANCH: branch_1.3.x_hubspot
+
+
+stepActivation:
+  notify:
+    branches: [branch_1.3.x_hubspot]
