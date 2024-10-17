@@ -19,7 +19,7 @@
   <properties>
     <module-name>ch.qos.logback.access</module-name>
   </properties>
-  
+
   <dependencies>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -157,8 +157,5 @@
       </plugin>
     </plugins>
   </build>
-
-  <profiles>
-  </profiles>
 
 </project>
