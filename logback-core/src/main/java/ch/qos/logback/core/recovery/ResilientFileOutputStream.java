@@ -20,11 +20,15 @@ public class ResilientFileOutputStream extends ResilientOutputStreamBase {
 
     private File file;
     private FileOutputStream fos;
+    private ByteCountingOutputStream countingOutputStream;
+    private long originalFileLength;
 
     public ResilientFileOutputStream(File file, boolean append, long bufferSize) throws FileNotFoundException {
         this.file = file;
+        this.originalFileLength = append ? getFileLength(file) : 0;
         fos = new FileOutputStream(file, append);
-        this.os = new BufferedOutputStream(fos, (int) bufferSize);
+        countingOutputStream = new ByteCountingOutputStream(new BufferedOutputStream(fos, (int) bufferSize));
+        this.os = countingOutputStream;
         this.presumedClean = true;
     }
 
@@ -39,6 +43,10 @@ public class ResilientFileOutputStream extends ResilientOutputStreamBase {
         return file;
     }
 
+    public long getCount() {
+        return originalFileLength + (countingOutputStream == null ? 0 : countingOutputStream.getByteCount());
+    }
+
     @Override
     String getDescription() {
         return "file [" + file + "]";
@@ -46,9 +54,11 @@ public class ResilientFileOutputStream extends ResilientOutputStreamBase {
 
     @Override
     OutputStream openNewOutputStream() throws IOException {
+        originalFileLength = getFileLength(file);
         // see LOGBACK-765
         fos = new FileOutputStream(file, true);
-        return new BufferedOutputStream(fos);
+        countingOutputStream = new ByteCountingOutputStream(new BufferedOutputStream(fos));
+        return countingOutputStream;
     }
 
     @Override
@@ -56,4 +66,12 @@ public class ResilientFileOutputStream extends ResilientOutputStreamBase {
         return "c.q.l.c.recovery.ResilientFileOutputStream@" + System.identityHashCode(this);
     }
 
+    private static long getFileLength(File file) {
+        try {
+            return file.length();
+        } catch (Exception ignored) {
+            // file doesn't exist or we don't have permissions
+            return 0L;
+        }
+    }
 }
