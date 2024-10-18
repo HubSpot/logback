@@ -13,8 +13,6 @@
  */
 package ch.qos.logback.core.recovery;
 
-import com.google.common.io.CountingOutputStream;
-
 import java.io.*;
 import java.nio.channels.FileChannel;
 
@@ -22,14 +20,14 @@ public class ResilientFileOutputStream extends ResilientOutputStreamBase {
 
     private File file;
     private FileOutputStream fos;
-    private CountingOutputStream countingOutputStream;
+    private ByteCountingOutputStream countingOutputStream;
     private long originalFileLength;
 
     public ResilientFileOutputStream(File file, boolean append, long bufferSize) throws FileNotFoundException {
         this.file = file;
         this.originalFileLength = append ? getFileLength(file) : 0;
         fos = new FileOutputStream(file, append);
-        countingOutputStream = new CountingOutputStream(new BufferedOutputStream(fos, (int) bufferSize));
+        countingOutputStream = new ByteCountingOutputStream(new BufferedOutputStream(fos, (int) bufferSize));
         this.os = countingOutputStream;
         this.presumedClean = true;
     }
@@ -46,7 +44,7 @@ public class ResilientFileOutputStream extends ResilientOutputStreamBase {
     }
 
     public long getCount() {
-        return originalFileLength + (countingOutputStream == null ? 0 : countingOutputStream.getCount());
+        return originalFileLength + (countingOutputStream == null ? 0 : countingOutputStream.getByteCount());
     }
 
     @Override
@@ -59,7 +57,7 @@ public class ResilientFileOutputStream extends ResilientOutputStreamBase {
         originalFileLength = getFileLength(file);
         // see LOGBACK-765
         fos = new FileOutputStream(file, true);
-        countingOutputStream = new CountingOutputStream(new BufferedOutputStream(fos));
+        countingOutputStream = new ByteCountingOutputStream(new BufferedOutputStream(fos));
         return countingOutputStream;
     }
 

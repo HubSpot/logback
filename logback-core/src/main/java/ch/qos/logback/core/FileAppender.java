@@ -242,7 +242,7 @@ public class FileAppender<E> extends OutputStreamAppender<E> {
 
     /**
      * Returns the current position in the current file, as counted by
-     * {@link com.google.common.io.CountingOutputStream}, or zero if no file has been opened.
+     * {@link ch.qos.logback.core.recovery.ByteCountingOutputStream}, or zero if no file has been opened.
      */
     protected long getCurrentFilePosition() {
         OutputStream outputStream = getOutputStream();
