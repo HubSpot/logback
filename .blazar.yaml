@@ -2,6 +2,7 @@ buildpack:
   name: Blazar-Buildpack-Java
 
 env:
+  SET_VERSION_OVERRIDE: 1.3-$GIT_BRANCH-SNAPSHOT
   SKIP_VERSION_OVERRIDE_ON_BRANCH: branch_1.3.x_hubspot
 
 stepActivation:
