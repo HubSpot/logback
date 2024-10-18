@@ -12,6 +12,8 @@
 package ch.qos.logback.core.rolling.helper;
 
 import static ch.qos.logback.core.CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP;
+import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.MAX_HISTORY;
+import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.TOTAL_SIZE_CAP;
 
 import java.io.File;
 import java.time.Instant;
@@ -19,6 +21,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
 import ch.qos.logback.core.CoreConstants;
+import ch.qos.logback.core.LogbackMetrics;
 import ch.qos.logback.core.pattern.Converter;
 import ch.qos.logback.core.pattern.LiteralConverter;
 import ch.qos.logback.core.spi.ContextAwareBase;
@@ -114,7 +117,10 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
             addWarn("Cannot delete non existent file");
             return false;
         }
-       
+
+        LogbackMetrics.getDeletedLogFilesCounter(MAX_HISTORY, fileNamePattern).inc();
+        LogbackMetrics.getDeletedLogFileSizeHistogram(MAX_HISTORY, fileNamePattern).update(f.length());
+
         boolean result = f.delete();
         if (!result) {
             addWarn("Failed to delete file " + f.toString());
@@ -135,6 +141,11 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
                     addInfo("Deleting [" + f + "]" + " of size " + new FileSize(size));
                     // assume that deletion attempt will succeed.
                     totalRemoved += size;
+
+                    LogbackMetrics.getDeletedLogFilesCounter(TOTAL_SIZE_CAP,
+                            fileNamePattern).inc();
+                    LogbackMetrics.getDeletedLogFileSizeHistogram(TOTAL_SIZE_CAP,
+                            fileNamePattern).update(f.length());
 
                     checkAndDeleteFile(f);
                 }
