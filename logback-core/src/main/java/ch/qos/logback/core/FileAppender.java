@@ -18,7 +18,6 @@ import static ch.qos.logback.core.CoreConstants.MORE_INFO_PREFIX;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.channels.FileChannel;
 import java.nio.channels.FileLock;
 import java.util.Map;
@@ -238,20 +237,6 @@ public class FileAppender<E> extends OutputStreamAppender<E> {
     public void setBufferSize(FileSize bufferSize) {
         addInfo("Setting bufferSize to [" + bufferSize.toString() + "]");
         this.bufferSize = bufferSize;
-    }
-
-    /**
-     * Returns the current position in the current file, as counted by
-     * {@link ch.qos.logback.core.recovery.ByteCountingOutputStream}, or zero if no file has been opened.
-     */
-    protected long getCurrentFilePosition() {
-        OutputStream outputStream = getOutputStream();
-        if (outputStream == null) {
-            return 0;
-        } else {
-            // we already cast to a ResilientFileOutputStream in #safeWrite()
-            return ((ResilientFileOutputStream) outputStream).getCount();
-        }
     }
 
     @Override
