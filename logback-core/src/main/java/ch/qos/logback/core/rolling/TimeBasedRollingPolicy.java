@@ -227,6 +227,11 @@ public class TimeBasedRollingPolicy<E> extends RollingPolicyBase implements Trig
         }
     }
 
+    @Override
+    public boolean isTriggeringEvent(File activeFile, E event, long currentFilePosition) {
+        return timeBasedFileNamingAndTriggeringPolicy.isTriggeringEvent(activeFile, event, currentFilePosition);
+    }
+
     /**
      * Delegates to the underlying timeBasedFileNamingAndTriggeringPolicy.
      *
