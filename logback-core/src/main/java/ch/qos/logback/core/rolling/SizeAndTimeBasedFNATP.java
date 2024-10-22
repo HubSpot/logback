@@ -141,7 +141,11 @@ public class SizeAndTimeBasedFNATP<E> extends TimeBasedFileNamingAndTriggeringPo
 
     @Override
     public boolean isTriggeringEvent(File activeFile, final E event) {
+        return isTriggeringEvent(activeFile, event, -1);
+    }
 
+    @Override
+    public boolean isTriggeringEvent(final File activeFile, final E event, long currentFilePosition) {
         long currentTime = getCurrentTime();
         long localNextCheck = atomicNextCheck.get();
 
@@ -158,10 +162,10 @@ public class SizeAndTimeBasedFNATP<E> extends TimeBasedFileNamingAndTriggeringPo
             return true;
         }
 
-        return checkSizeBasedTrigger(activeFile, currentTime);
+        return checkSizeBasedTrigger(activeFile, currentTime, currentFilePosition);
     }
 
-    private boolean checkSizeBasedTrigger(File activeFile, long currentTime) {
+    private boolean checkSizeBasedTrigger(File activeFile, long currentTime, long currentFilePosition) {
         // next check for roll-over based on size
         if (invocationGate.isTooSoon(currentTime)) {
             return false;
@@ -175,7 +179,8 @@ public class SizeAndTimeBasedFNATP<E> extends TimeBasedFileNamingAndTriggeringPo
             addWarn("maxFileSize = null");
             return false;
         }
-        if (activeFile.length() >= maxFileSize.getSize()) {
+        long activeFileLength = currentFilePosition >= 0 ? currentFilePosition : activeFile.length();
+        if (activeFileLength >= maxFileSize.getSize()) {
 
             elapsedPeriodsFileName = tbrp.fileNamePatternWithoutCompSuffix.convertMultipleArguments(dateInCurrentPeriod,
                     currentPeriodsCounter);
