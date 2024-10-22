@@ -35,6 +35,4 @@ public interface TriggeringPolicy<E> extends LifeCycle {
      * @return true if a roll-over should occur.
      */
     boolean isTriggeringEvent(final File activeFile, final E event);
-
-    boolean isTriggeringEvent(final File activeFile, final E event, long currentFilePosition);
 }

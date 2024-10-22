@@ -242,7 +242,7 @@ public class RollingFileAppender<E> extends FileAppender<E> {
 
         triggeringPolicyLock.lock();
         try {
-            if (triggeringPolicy.isTriggeringEvent(currentlyActiveFile, event, getCurrentFilePosition())) {
+            if (triggeringPolicy.isTriggeringEvent(currentlyActiveFile, event)) {
                 rollover();
             }
         } finally {
