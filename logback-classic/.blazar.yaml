@@ -1,0 +1,24 @@
+buildpack:
+  name: Blazar-Buildpack-Java
+
+env:
+  SET_VERSION_OVERRIDE: 1.4-$GIT_BRANCH-SNAPSHOT
+  SKIP_VERSION_OVERRIDE_ON_BRANCH: branch_1.4.x_hubspot
+  MAVEN_OPTS: -Xmx3072m
+  MAVEN_BUILD_ARGS: -DskipTests
+
+stepActivation:
+  notify:
+    branches: [branch_1.4.x_hubspot]
+
+after:
+  onFailure:
+    - description: Collect core dumps and move to viewable artifacts directory
+      expandSegmentByDefault: true
+      commands:
+        - |
+          echo "Checking for core dumps in $(pwd)"
+          find . -regextype sed -regex ".*/core\.[[:digit:]]\+" -exec echo "Found {}, copying to viewable build artifacts" \;
+          find . -regextype sed -regex ".*/core\.[[:digit:]]\+" -exec cp {} $VIEWABLE_BUILD_ARTIFACTS_DIR \;
+          find . -regextype sed -regex ".*/.*.dumpstream" -exec echo "Found {}, copying to viewable build artifacts" \;
+          find . -regextype sed -regex ".*/.*.dumpstream" -exec cp {} $VIEWABLE_BUILD_ARTIFACTS_DIR \;
