@@ -17,6 +17,8 @@ module ch.qos.logback.core {
 
     // optionally require jansi
     requires static org.fusesource.jansi;
+    requires com.google.common;
+    requires metrics.core;
 
     exports ch.qos.logback.core;
     exports ch.qos.logback.core.boolex;
