@@ -18,12 +18,15 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class SizeAndTimeBasedArchiveRemover extends TimeBasedArchiveRemover {
 
     protected static final int NO_INDEX = -1;
+    private static final Map<String, Pattern> STEM_REGEX_PATTERN_CACHE = new ConcurrentHashMap<>();
 
     public SizeAndTimeBasedArchiveRemover(FileNamePattern fileNamePattern, RollingCalendar rc) {
         super(fileNamePattern, rc);
@@ -33,7 +36,8 @@ public class SizeAndTimeBasedArchiveRemover extends TimeBasedArchiveRemover {
     protected File[] getFilesInPeriod(Instant instantOfPeriodToClean) {
         File archive0 = new File(fileNamePattern.convertMultipleArguments(instantOfPeriodToClean, 0));
         File parentDir = getParentDir(archive0);
-        String stemRegex = createStemRegex(instantOfPeriodToClean);
+        Pattern pattern = getOrCreateStemRegexPattern(instantOfPeriodToClean);
+        String stemRegex = pattern.pattern();
         File[] matchingFileArray = FileFilterUtil.filesInFolderMatchingStemRegex(parentDir, stemRegex);
         return matchingFileArray;
     }
@@ -41,6 +45,7 @@ public class SizeAndTimeBasedArchiveRemover extends TimeBasedArchiveRemover {
     @Override
     protected void descendingSort(File[] matchingFileArray, Instant instant) {
 
+        // For backwards compatibility, use the original method of creating the pattern
         String regexForIndexExtreaction = createStemRegex(instant);
         final Pattern pattern = Pattern.compile(regexForIndexExtreaction);
 
@@ -75,6 +80,11 @@ public class SizeAndTimeBasedArchiveRemover extends TimeBasedArchiveRemover {
         });
     }
 
+    private Pattern getOrCreateStemRegexPattern(final Instant instant) {
+        String regexStr = createStemRegex(instant);
+        return STEM_REGEX_PATTERN_CACHE.computeIfAbsent(regexStr, Pattern::compile);
+    }
+    
     private String createStemRegex(final Instant instantOfPeriodToClean) {
         String regex = fileNamePattern.toRegexForFixedDate(instantOfPeriodToClean);
         return FileFilterUtil.afterLastSlash(regex);
