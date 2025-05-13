@@ -99,6 +99,8 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
         File[] matchingFileArray = getFilesInPeriod(instantOfPeriodToClean);
 
         for (File f : matchingFileArray) {
+            LogbackMetrics.getDeletedLogFilesCounter(MAX_HISTORY, fileNamePattern).inc();
+            LogbackMetrics.getDeletedLogFileSizeHistogram(MAX_HISTORY, fileNamePattern).update(f.length());
             checkAndDeleteFile(f);
         }
 
@@ -117,10 +119,6 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
             addWarn("Cannot delete non existent file");
             return false;
         }
-
-        LogbackMetrics.getDeletedLogFilesCounter(MAX_HISTORY, fileNamePattern).inc();
-        LogbackMetrics.getDeletedLogFileSizeHistogram(MAX_HISTORY, fileNamePattern).update(f.length());
-
         boolean result = f.delete();
         if (!result) {
             addWarn("Failed to delete file " + f.toString());
