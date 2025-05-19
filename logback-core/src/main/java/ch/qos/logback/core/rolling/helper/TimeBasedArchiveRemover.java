@@ -99,9 +99,10 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
         File[] matchingFileArray = getFilesInPeriod(instantOfPeriodToClean);
 
         for (File f : matchingFileArray) {
-            LogbackMetrics.getDeletedLogFilesCounter(MAX_HISTORY, fileNamePattern).inc();
-            LogbackMetrics.getDeletedLogFileSizeHistogram(MAX_HISTORY, fileNamePattern).update(f.length());
-            checkAndDeleteFile(f);
+            if (checkAndDeleteFile(f)) {
+                LogbackMetrics.getDeletedLogFilesCounter(MAX_HISTORY, fileNamePattern).inc();
+                LogbackMetrics.getDeletedLogFileSizeHistogram(MAX_HISTORY, fileNamePattern).update(f.length());
+            }
         }
 
         if (parentClean && matchingFileArray.length > 0) {
@@ -140,12 +141,10 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
                     // assume that deletion attempt will succeed.
                     totalRemoved += size;
 
-                    LogbackMetrics.getDeletedLogFilesCounter(TOTAL_SIZE_CAP,
-                            fileNamePattern).inc();
-                    LogbackMetrics.getDeletedLogFileSizeHistogram(TOTAL_SIZE_CAP,
-                            fileNamePattern).update(f.length());
-
-                    checkAndDeleteFile(f);
+                    if (checkAndDeleteFile(f)) {
+                        LogbackMetrics.getDeletedLogFilesCounter(TOTAL_SIZE_CAP, fileNamePattern).inc();
+                        LogbackMetrics.getDeletedLogFileSizeHistogram(TOTAL_SIZE_CAP, fileNamePattern).update(f.length());
+                    }
                 }
                 totalSize += size;
             }
