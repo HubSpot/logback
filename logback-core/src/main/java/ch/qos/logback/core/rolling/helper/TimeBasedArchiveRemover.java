@@ -11,14 +11,14 @@
  */
 package ch.qos.logback.core.rolling.helper;
 
-import static ch.qos.logback.core.CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP;
-import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.MAX_HISTORY;
-import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.TOTAL_SIZE_CAP;
-
 import java.io.File;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
+
+import static ch.qos.logback.core.CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP;
+import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.MAX_HISTORY;
+import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.TOTAL_SIZE_CAP;
 
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.LogbackMetrics;
@@ -99,9 +99,10 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
         File[] matchingFileArray = getFilesInPeriod(instantOfPeriodToClean);
 
         for (File f : matchingFileArray) {
+            long size = f.length();
             if (checkAndDeleteFile(f)) {
                 LogbackMetrics.getDeletedLogFilesCounter(MAX_HISTORY, fileNamePattern).inc();
-                LogbackMetrics.getDeletedLogFileSizeHistogram(MAX_HISTORY, fileNamePattern).update(f.length());
+                LogbackMetrics.getDeletedLogFileSizeHistogram(MAX_HISTORY, fileNamePattern).update(size);
             }
         }
 
@@ -143,7 +144,7 @@ public class TimeBasedArchiveRemover extends ContextAwareBase implements Archive
 
                     if (checkAndDeleteFile(f)) {
                         LogbackMetrics.getDeletedLogFilesCounter(TOTAL_SIZE_CAP, fileNamePattern).inc();
-                        LogbackMetrics.getDeletedLogFileSizeHistogram(TOTAL_SIZE_CAP, fileNamePattern).update(f.length());
+                        LogbackMetrics.getDeletedLogFileSizeHistogram(TOTAL_SIZE_CAP, fileNamePattern).update(size);
                     }
                 }
                 totalSize += size;
