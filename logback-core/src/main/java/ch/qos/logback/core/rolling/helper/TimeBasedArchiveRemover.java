@@ -11,14 +11,14 @@
  */
 package ch.qos.logback.core.rolling.helper;
 
+import static ch.qos.logback.core.CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP;
+import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.MAX_HISTORY;
+import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.TOTAL_SIZE_CAP;
+
 import java.io.File;
 import java.time.Instant;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
-
-import static ch.qos.logback.core.CoreConstants.UNBOUNDED_TOTAL_SIZE_CAP;
-import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.MAX_HISTORY;
-import static ch.qos.logback.core.rolling.helper.ArchiveRemoverReason.TOTAL_SIZE_CAP;
 
 import ch.qos.logback.core.CoreConstants;
 import ch.qos.logback.core.LogbackMetrics;
