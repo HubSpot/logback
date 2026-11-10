@@ -40,11 +40,11 @@
 
   <modules>
     <module>logback-core</module>
-    <module>logback-core-blackbox</module>
+    <!--module>logback-core-blackbox</module-->
     <module>logback-classic</module>
-    <module>logback-classic-blackbox</module>    
+    <!--module>logback-classic-blackbox</module-->
     <module>logback-access</module>
-    <module>logback-examples</module>
+    <!--module>logback-examples</module-->
   </modules>
 
   <properties>
@@ -69,7 +69,7 @@
     <janino.version>3.1.8</janino.version>
     <!-- slf4j.version property is used below, in
          logback-classic/pom.xml, /logback-examples/src/main/resources/setClasspath.cmd, download.html
-    -->    
+    -->
     <slf4j.version>2.0.7</slf4j.version>
     <cal10n.version>0.8.1</cal10n.version>
     <consolePlugin.version>1.1.0</consolePlugin.version>
@@ -392,14 +392,14 @@
               <source>${jdk.version}</source>
               <target>${jdk.version}</target>
             </configuration>
-          </execution> 
+          </execution>
           <!--  requires module-name to be defined in submodule/pom.xml -->
-          <execution>                      
+          <execution>
             <id>module-compile</id>
             <phase>compile</phase>
             <goals>
               <goal>compile</goal>
-            </goals>          
+            </goals>
             <configuration>
               <release>9</release>
               <compileSourceRoots>
@@ -410,7 +410,7 @@
           </execution>
         </executions>
       </plugin>
- 
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -469,13 +469,13 @@
           <linkJavadoc>true</linkJavadoc>
         </configuration>
       </plugin>
-      
-      
+
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        
-        <configuration>                                
+
+        <configuration>
           <aggregate>true</aggregate>
           <linkJavadoc>true</linkJavadoc>
           <linksource>true</linksource>
@@ -488,7 +488,7 @@
               http://docs.oracle.com/javase/7/docs/api/
             </link>
           </links>
-          
+
           <groups>
             <group>
               <title>Logback Core</title>
@@ -510,14 +510,14 @@
               <title>Examples</title>
               <packages>chapter*:joran*</packages>
             </group>
-          </groups>                  
+          </groups>
         </configuration>
       </plugin>
-      
-            
+
+
     </plugins>
   </reporting>
-  
+
   <profiles>
     <profile>
       <id>testSkip</id>
@@ -570,7 +570,7 @@
                 <goals>
                   <goal>jar</goal>
                 </goals>
-              </execution>            
+              </execution>
             </executions>
             <configuration>
               <doclint>none</doclint>
